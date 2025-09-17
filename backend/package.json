@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "react-grid-system": "^8.2.1"
+  }
+}
