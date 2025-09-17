@@ -42,7 +42,7 @@ function App() {
     setLoading(true);
     try {
       const response = await axios.post<{generated_text: string, status: string}>(
-        'http://localhost:8000/api/generate',
+        'http://localhost:8080/api/generate',
         {
           text: inputText,
           temperature: temperature,

@@ -6,7 +6,7 @@ This app is developped with the help of AI.
 
 Chinese version
 一，开发框架
-  1，前端：React + TypeScript
+  1，前端：React + TypeScript + Css
   2，网关：Java Spring Gateway (轻量级)
   3，后端：Python FastAPI
   4，推理：Mistral 7B + LoRA
@@ -37,6 +37,15 @@ Chinese version
 16/09/2025
 1，后端核心调试功能已经跑通
 2，react前端页面初步尝试
+
+17/09/2025
+1，前端页面和LoRA参数界面完成
+2，Spring Boot Gateway成功集成
+3，完整的三层架构运行正常
+4，前后端通过网关通信正常
+5，frontend-> gateway ->fastapi -> (colab) ->result前三步
+
+
 
 
 
