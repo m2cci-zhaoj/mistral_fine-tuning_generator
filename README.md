@@ -46,7 +46,7 @@ Chinese version
 5，frontend-> gateway ->fastapi -> (colab) ->result前三步
 
 18/09/2025
-1, 
+1, 文件上传功能完成，支持拖拽和点击上传txt文件
 
 
 
