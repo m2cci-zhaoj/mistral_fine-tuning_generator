@@ -45,6 +45,9 @@ Chinese version
 4，前后端通过网关通信正常
 5，frontend-> gateway ->fastapi -> (colab) ->result前三步
 
+18/09/2025
+1, 
+
 
 
 

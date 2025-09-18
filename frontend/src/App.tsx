@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
-import { Input, Button, Card, message, Spin, Select } from 'antd';
+// import React, { useState } from 'react';
+// import { Input, Button, Card, message, Spin, Select } from 'antd';
+// import axios from 'axios';
+// import './App.css';
+import React, { useState, useCallback } from 'react';
+import { Input, Button, Card, message, Spin, Select, Upload } from 'antd';
+import { useDropzone } from 'react-dropzone';
+import { InboxOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './App.css';
+
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -33,6 +40,46 @@ function App() {
   const [loraDropout, setLoraDropout] = useState(0.1);
   const [targetModules, setTargetModules] = useState(['query', 'key', 'value']);
 
+  // 新增文件上传状态
+  const [uploadedFileName, setUploadedFileName] = useState('');
+
+  // 文件上传处理函数
+  const handleFileUpload = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
+        message.error('请上传txt文件');
+        return;
+      }
+      
+      if (file.size > 1024 * 1024) { // 1MB限制
+        message.error('文件大小不能超过1MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        setInputText(content);
+        setUploadedFileName(file.name);
+        message.success(`文件 "${file.name}" 上传成功`);
+      };
+      reader.onerror = () => {
+        message.error('文件读取失败');
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileUpload,
+    accept: {
+      'text/plain': ['.txt']
+    },
+    multiple: false
+  });
+  
+  
   const handleGenerate = async () => {
     if (!inputText.trim()) {
       message.error('请输入文本');
@@ -76,20 +123,67 @@ function App() {
             基于大模型微调的风格模仿文本生成
           </p>
         </div>
+        
 
         {/* 响应式三栏布局 */}
         <div className="grid-container grid-3" style={{ minHeight: '600px', gap: '15px' }}>
-          {/* 左侧：文本输入 */}
+          {/* 左侧：文本输入 - 添加文件上传功能 */}
           <div className="grid-item">
             <Card title="文本输入" style={{ height: '100%', minHeight: '600px' }}>
+              {/* 文件上传区域 */}
+              <div 
+                {...getRootProps()} 
+                style={{
+                  border: '2px dashed #d9d9d9',
+                  borderRadius: '6px',
+                  padding: '20px',
+                  marginBottom: '15px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  backgroundColor: isDragActive ? '#f0f8ff' : '#fafafa',
+                  transition: 'background-color 0.3s'
+                }}
+              >
+                <input {...getInputProps()} />
+                <InboxOutlined style={{ fontSize: '48px', color: '#1890ff', marginBottom: '10px' }} />
+                {isDragActive ? (
+                  <p>拖拽文件到这里...</p>
+                ) : (
+                  <div>
+                    <p style={{ margin: '8px 0' }}>拖拽txt文件到这里，或点击选择文件</p>
+                    <p style={{ color: '#999', fontSize: '12px' }}>支持 .txt 文件，最大 1MB</p>
+                    {uploadedFileName && (
+                      <p style={{ color: '#52c41a', fontSize: '14px', margin: '5px 0' }}>
+                        已上传: {uploadedFileName}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* 文本框 */}
               <TextArea
-                rows={12}
-                placeholder="请输入想要模仿的作家的txt文本..."
+                rows={8}
+                placeholder="在上方拖拽txt文件，或直接在此输入文本..."
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 style={{ resize: 'none', marginBottom: '20px' }}
               />
               
+              {/* 清空按钮 */}
+              {inputText && (
+                <Button 
+                  onClick={() => {
+                    setInputText('');
+                    setUploadedFileName('');
+                  }}
+                  style={{ marginBottom: '10px', marginRight: '10px' }}
+                >
+                  清空
+                </Button>
+              )}
+              
+              {/* 生成按钮 */}
               <Button 
                 type="primary" 
                 size="large"
@@ -102,6 +196,8 @@ function App() {
               </Button>
             </Card>
           </div>
+
+
 
           {/* 中间：生成结果 */}
           <div className="grid-item">
